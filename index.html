@@ -23,7 +23,7 @@
     <div class="ml-24">
       <a href="/" class="logo"></a>
     </div>
-    <div onclick="APP.toogleLang()" class="translate-button flex-container mt-6 mr-24 align-items-center">
+    <div onclick="toggleLang()" class="translate-button flex-container mt-6 mr-24 align-items-center">
       <div class="mr-8">
         <div class="lang-image ru">
           <div class="lang-en">
@@ -62,7 +62,7 @@
           </div>
         </div>
       </div>
-      <div class="lang">RUS</div>
+      <div class="lang" id="l_lang">RUS</div>
     </div>
   </div>
   <div>
@@ -120,10 +120,10 @@
         </svg>
       </div>
       <div class="status-container-inner">
-        <h4 class="title-h4 white status-title main-title">Сертификат вакцинации от COVID-19</h4>
+        <h4 class="title-h4 white status-title main-title" id="l_cert">Сертификат вакцинации от COVID-19</h4>
         <div class="status mt-12 text-plain small-text bold">
           <span class="status-value hide not-found"></span>
-          <span class="status-value cert-name">Действителен</span>
+          <span class="status-value cert-name" id="l_valid">Действителен</span>
         </div>
         <h4 class="title-h4 white status-title mt-12"><span class="num-symbol">№</span> <span class="unrz" id="i">9630 0000 0894 7451</span></h4>
       </div>
@@ -149,31 +149,116 @@
             <path d="M6.625 12.625C6.97018 12.625 7.25 12.3452 7.25 12C7.25 11.6548 6.97018 11.375 6.625 11.375C6.27982 11.375 6 11.6548 6 12C6 12.3452 6.27982 12.625 6.625 12.625Z" fill="#66727F"></path>
             <path d="M6.625 7.1875C6.97018 7.1875 7.25 6.90768 7.25 6.5625C7.25 6.21732 6.97018 5.9375 6.625 5.9375C6.27982 5.9375 6 6.21732 6 6.5625C6 6.90768 6.27982 7.1875 6.625 7.1875Z" fill="#66727F"></path>
           </svg>
-       </div>
-        <div class="small-text gray mr-4">Действует до: </div>
-        <div class="small-text gray" id="v">05.05.2022</div>
+        </div>
+        <div class="small-text gray mr-4" id="l_until">Действует до: </div>
+        <div class="small-text gray" id="v">09.05.2022</div>
       </div>
     </div>
 
     <div class="person-data person-data-attrs mt-24"><div class="mb-4 person-data-wrap attr-wrap"><div class="small-text mb-4 mr-4 attr-title hide">ФИО: </div>
-      <div class="attrValue title-h6 bold text-center" id="n"><span id="n1">Л******</span> <span id="n2">Л******</span> <span id="n3">П*******</span></div></div><div class="mb-4 person-data-wrap attr-wrap"><div class="small-text mb-4 mr-4 attr-title">Дата рождения: </div>
-      <div class="attrValue small-text gray" id="b">01.02.1978</div></div><div class="mb-4 person-data-wrap attr-wrap"><div class="small-text mb-4 mr-4 attr-title">Паспорт: </div>
+      <div class="attrValue title-h6 bold text-center" id="n"><span id="n1">Л******</span> <span id="n2">Л******</span> <span id="n3">П*******</span></div></div><div class="mb-4 person-data-wrap attr-wrap">
+      <div class="small-text mb-4 mr-4 attr-title" id="l_birth">Дата рождения: </div>
+      <div class="attrValue small-text gray" id="b">01.02.1978</div></div><div class="mb-4 person-data-wrap attr-wrap">
+      <div class="small-text mb-4 mr-4 attr-title" id="l_pass">Паспорт: </div>
       <div class="attrValue small-text gray" id="p"><span id="p1">36</span>** ***<span id="p2">208</span></div></div>
     </div>
 
     <div class="mt-24">
-      <a href="https://gosuslugi.ru" rel="noreferrer nofollow" class="button close">Закрыть</a>
+      <a href="https://gosuslugi.ru" rel="noreferrer nofollow" class="button close" id="l_close">Закрыть</a>
       <a download="" rel="noopener" target="_blank" class="button download hide"></a>
     </div>
   </div>
 </div>
 
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-for (var key of urlParams.keys()) {
-  const el = document.getElementById(key);
-  el.innerText = urlParams.get(key);
+
+function setElementText(id, text) {
+  (document.getElementById(id)).innerText = text;
 }
+
+var urlParams = new URLSearchParams(window.location.search);
+for (var key of urlParams.keys()) {
+  setElementText(key, urlParams.get(key));
+}
+
+var fields = {
+  ru: {
+    l_lang: 'RUS',
+    l_valid: 'Действителен',
+    l_cert: 'Сертификат вакцинации от COVID-19',
+    l_until: 'Действует до:',
+    l_birth: 'Дата рождения:',
+    l_pass: 'Паспорт:',
+    l_close: 'Закрыть',
+  },
+  en: {
+    l_lang: 'ENG',
+    l_valid: 'Valid',
+    l_cert: 'COVID-19 vaccination certificate',
+    l_until: 'Valid until:',
+    l_birth: 'Date of birth:',
+    l_pass: 'National passport:',
+    l_close: 'Close',
+  },
+}
+
+let isRus = true;
+function toggleLang() {
+  isRus = !isRus;
+
+  const langKey = !isRus ? 'en' : 'ru';
+  const langFields = fields[langKey];
+
+  var el = document.getElementsByClassName('lang-image');
+  el[0].classList.remove('en');
+  el[0].classList.remove('ru');
+  el[0].classList.add(langKey);
+
+  Object.keys(langFields).forEach(function (key) {
+    setElementText(key, langFields[key]);
+  });
+
+  // translate the name
+  function translate(text) {
+    if (isRus) {
+      return text;
+    } else {
+      var answer = '';
+      var converter = {
+        'а': 'a',    'б': 'b',    'в': 'v',    'г': 'g',    'д': 'd',
+        'е': 'e',    'ё': 'e',    'ж': 'zh',   'з': 'z',    'и': 'i',
+        'й': 'y',    'к': 'k',    'л': 'l',    'м': 'm',    'н': 'n',
+        'о': 'o',    'п': 'p',    'р': 'r',    'с': 's',    'т': 't',
+        'у': 'u',    'ф': 'f',    'х': 'h',    'ц': 'c',    'ч': 'ch',
+        'ш': 'sh',   'щ': 'sch',  'ь': '',     'ы': 'y',    'ъ': '',
+        'э': 'e',    'ю': 'yu',   'я': 'ya',
+
+        'А': 'A',    'Б': 'B',    'В': 'V',    'Г': 'G',    'Д': 'D',
+        'Е': 'E',    'Ё': 'E',    'Ж': 'Zh',   'З': 'Z',    'И': 'I',
+        'Й': 'Y',    'К': 'K',    'Л': 'L',    'М': 'M',    'Н': 'N',
+        'О': 'O',    'П': 'P',    'Р': 'R',    'С': 'S',    'Т': 'T',
+        'У': 'U',    'Ф': 'F',    'Х': 'H',    'Ц': 'C',    'Ч': 'Ch',
+        'Ш': 'Sh',   'Щ': 'Sch',  'Ь': '',     'Ы': 'Y',    'Ъ': '',
+        'Э': 'E',    'Ю': 'Yu',   'Я': 'Ya'
+      };
+      for (var i = 0; i < text.length; ++i) {
+        if (converter[text[i]] === undefined) {
+          answer += text[i];
+        } else {
+          answer += converter[text[i]];
+        }
+      }
+
+      return answer;
+    }
+  }
+
+  var urlParams = new URLSearchParams(window.location.search);
+  setElementText('n1', translate(urlParams.get('n1')));
+  setElementText('n2', translate(urlParams.get('n2')));
+  setElementText('n3', translate(urlParams.get('n3')));
+}
+
 </script>
 
 </body></html>
